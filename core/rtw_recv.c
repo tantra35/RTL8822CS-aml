@@ -16,7 +16,7 @@
 
 #include <drv_types.h>
 #include <hal_data.h>
-#include <sched.h>
+#include <linux/sched.h>
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 static void rtw_signal_stat_timer_hdl(void *ctx);
