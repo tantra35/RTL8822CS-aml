@@ -1476,11 +1476,13 @@ unsigned int rtw_classify8021d(struct sk_buff *skb)
 
 
 static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
+	, struct net_device *sb_dev
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
 	, void *accel_priv
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
 	, select_queue_fallback_t fallback
-	#endif
 #endif
 )
 {
@@ -1634,9 +1636,19 @@ int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
 	_adapter *padapter = rtw_netdev_priv(pnetdev);
 	struct net_device	*TargetNetdev = NULL;
 	_adapter			*TargetAdapter = NULL;
+	struct net		*devnet = NULL;
 
 	if (padapter->bDongle == 1) {
-		TargetNetdev = rtw_get_same_net_ndev_by_name(pnetdev, "wlan0");
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 24))
+		TargetNetdev = dev_get_by_name("wlan0");
+#else
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26))
+		devnet = pnetdev->nd_net;
+#else
+		devnet = dev_net(pnetdev);
+#endif
+		TargetNetdev = dev_get_by_name(devnet, "wlan0");
+#endif
 		if (TargetNetdev) {
 			RTW_INFO("Force onboard module driver disappear !!!\n");
 			TargetAdapter = rtw_netdev_priv(TargetNetdev);
