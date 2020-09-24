@@ -16,6 +16,7 @@
 
 #include <drv_types.h>		/* PADAPTER, rtw_xmit.h and etc. */
 #include <hal_data.h>		/* HAL_DATA_TYPE */
+#include <uapi/linux/sched/types.h>
 #include "../../hal_halmac.h"	/* rtw_halmac_sdio_tx_allowed() and etc. */
 #include "../rtl8822c.h"	/* rtl8822c_update_txdesc() and etc. */
 
